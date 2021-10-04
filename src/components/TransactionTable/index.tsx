@@ -1,13 +1,11 @@
-import { useEffect } from "react";
-import { api } from "../../services/api";
+import { useContext } from "react";
+import { TransactionsContext } from "../../contexts/TransactionsContext";
 import { Container } from "./styles";
 
-export function TransactionTable(){
 
-    useEffect(() => {
-        api.get('transactions')
-        .then(res => console.log(res.data))
-    }, [])
+
+export function TransactionTable(){
+    const transactions = useContext(TransactionsContext)
 
     return(
         <Container>
@@ -22,26 +20,24 @@ export function TransactionTable(){
                 </thead>
 
                 <tbody>
-                    <tr>
-                        <td>Desenvolvimento de websites</td>
-                        <td className="deposit">R$ 12.000,00</td>
-                        <td>Trabalho</td>
-                        <td>25/08/2021</td>
-                    </tr>
+                    {transactions.map(transaction => (
+                        <tr key={transaction.id}>
+                            <td>{transaction.title}</td>
+                            <td className={transaction.type}>
+                                {new Intl.NumberFormat('pt-br', {
+                                    style: 'currency',
+                                    currency: 'BRL'
+                                }).format(transaction.amount)}
+                                </td>
+                            <td>{transaction.category}</td>
+                            <td>
+                                {new Intl.DateTimeFormat('pt-br').format(
+                                    new Date(transaction.createdAt)
+                                )}
+                            </td>
+                        </tr>
+                    ))}
 
-                    <tr>
-                        <td>Aluguel</td>
-                        <td className="withdraw">- R$ 2.000,00</td>
-                        <td>casa</td>
-                        <td>25/08/2021</td>
-                    </tr>
-
-                    <tr>
-                        <td>Desenvolvimento de websites</td>
-                        <td>R$ 12.000,00</td>
-                        <td>Trabalho</td>
-                        <td>25/08/2021</td>
-                    </tr>
                 </tbody>
             </table>
         </Container>
